@@ -1,6 +1,7 @@
 package com.shalva.shalva;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,6 +34,9 @@ public class HelperActivity extends Activity {
 
                 Hood hood = hoods.get(position);
 
+                // Start GeoFencing for this activity
+                Intent intent = new Intent(HelperActivity.this, GeoFencingActivity.class);
+                startActivity(intent);
             }
         });
 
