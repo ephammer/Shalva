@@ -1,7 +1,9 @@
 package com.shalva.shalva;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,7 +30,8 @@ public class GeoFencingActivity extends AppCompatActivity implements
         LocationListener,
         ResultCallback<Status> {
 
-    private static final String TAG = GeoFencingActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String NOTIFICATION_MSG = "NOTIFICATION MSG";
     private static final long GEO_DURATION = 60 * 60 * 1000;
     private static final String GEOFENCE_REQ_ID = "My Geofence";
     private static final float GEOFENCE_RADIUS = 500.0f; // in meters
@@ -38,10 +41,19 @@ public class GeoFencingActivity extends AppCompatActivity implements
     private final int UPDATE_INTERVAL = 1000;
     private final int FASTEST_INTERVAL = 900;
     private final int GEOFENCE_REQ_CODE = 0;
+    private final String KEY_GEOFENCE_LAT = "GEOFENCE LATITUDE";
+    private final String KEY_GEOFENCE_LON = "GEOFENCE LONGITUDE";
     private GoogleApiClient googleApiClient;
     private android.location.Location lastLocation;
     private LocationRequest locationRequest;
     private PendingIntent geoFencePendingIntent;
+
+    // Create a Intent send by the notification
+    public static Intent makeNotificationIntent(Context context, String msg) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(NOTIFICATION_MSG, msg);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +62,6 @@ public class GeoFencingActivity extends AppCompatActivity implements
 
         // create GoogleApiClient
         createGoogleApi();
-
-        // Start the GeoFence
-        startGeofence();
     }
 
     // Create GoogleApiClient instance
@@ -140,18 +149,12 @@ public class GeoFencingActivity extends AppCompatActivity implements
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
-    @Override
-    public void onLocationChanged(android.location.Location location) {
-        Log.d(TAG, "onLocationChanged [" + location + "]");
-        lastLocation = location;
-//        writeActualLocation(location);
-    }
-
     // GoogleApiClient.ConnectionCallbacks connected
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(TAG, "onConnected()");
         getLastKnownLocation();
+        recoverGeofenceMarker();
     }
 
     // GoogleApiClient.ConnectionCallbacks suspended
@@ -172,13 +175,9 @@ public class GeoFencingActivity extends AppCompatActivity implements
         if (checkPermission()) {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (lastLocation != null) {
-                Log.i(TAG, "LasKnown location. " +
-                        "Long: " + lastLocation.getLongitude() +
-                        " | Lat: " + lastLocation.getLatitude());
-//                writeLastLocation();
+
                 startLocationUpdates();
             } else {
-                Log.w(TAG, "No location retrieved yet");
                 startLocationUpdates();
             }
         } else askPermission();
@@ -187,8 +186,7 @@ public class GeoFencingActivity extends AppCompatActivity implements
     // Start Geofence creation process
     private void startGeofence() {
         Log.i(TAG, "startGeofence()");
-        LatLng lng = new LatLng(31.769014, 35.18751);
-        Geofence geofence = createGeofence(lng, GEOFENCE_RADIUS);
+        Geofence geofence = createGeofence(new LatLng(31.769014, 35.18751), GEOFENCE_RADIUS);
         GeofencingRequest geofenceRequest = createGeofenceRequest(geofence);
         addGeofence(geofenceRequest);
     }
@@ -239,10 +237,55 @@ public class GeoFencingActivity extends AppCompatActivity implements
     public void onResult(@NonNull Status status) {
         Log.i(TAG, "onResult: " + status);
         if (status.isSuccess()) {
-//            saveGeofence();
-//            drawGeofence();
+            saveGeofence();
         } else {
             // inform about fail
         }
+    }
+
+    // Saving GeoFence marker with prefs mng
+    private void saveGeofence() {
+        Log.d(TAG, "saveGeofence()");
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.putLong(KEY_GEOFENCE_LAT, Double.doubleToRawLongBits(31.769014));
+        editor.putLong(KEY_GEOFENCE_LON, Double.doubleToRawLongBits(35.18751));
+        editor.apply();
+    }
+
+    // Recovering last Geofence marker
+    private void recoverGeofenceMarker() {
+        Log.d(TAG, "recoverGeofenceMarker");
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        if (sharedPref.contains(KEY_GEOFENCE_LAT) && sharedPref.contains(KEY_GEOFENCE_LON)) {
+            double lat = Double.longBitsToDouble(sharedPref.getLong(KEY_GEOFENCE_LAT, -1));
+            double lon = Double.longBitsToDouble(sharedPref.getLong(KEY_GEOFENCE_LON, -1));
+            LatLng latLng = new LatLng(lat, lon);
+        }
+    }
+
+    // Clear Geofence
+    private void clearGeofence() {
+        Log.d(TAG, "clearGeofence()");
+        LocationServices.GeofencingApi.removeGeofences(
+                googleApiClient,
+                createGeofencePendingIntent()
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if (status.isSuccess()) {
+                    // remove drawing
+
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onLocationChanged(android.location.Location location) {
+
+        lastLocation = location;
     }
 }

@@ -1,7 +1,10 @@
 package com.shalva.shalva;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -24,6 +27,16 @@ public class DriverActivity extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Hood hood = hoods.get(position);
+
+                Intent intent = new Intent(DriverActivity.this, GeoFencingActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
