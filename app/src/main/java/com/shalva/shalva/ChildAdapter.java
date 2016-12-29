@@ -11,13 +11,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by kid0n on 27/12/2016.
+ * Created by kid0n on 29/12/2016.
  */
 
-public class HoodAdapter extends ArrayAdapter<Hood> {
+public class ChildAdapter extends ArrayAdapter<Child> {
 
-    public HoodAdapter(Context context, ArrayList<Hood> hoods) {
-        super(context, 0, hoods);
+    public ChildAdapter(Context context, ArrayList<Child> children) {
+        super(context, 0, children);
     }
 
     @NonNull
@@ -30,10 +30,10 @@ public class HoodAdapter extends ArrayAdapter<Hood> {
                     R.layout.hood_list_item, parent, false);
         }
 
-        Hood currentHood = getItem(position);
+        Child currentChild = getItem(position);
 
         TextView hoodName = (TextView) listItemView.findViewById(R.id.hood_name_text_view);
-        hoodName.setText(currentHood.getName());
+        hoodName.setText(currentChild.getName());
 
         return listItemView;
     }

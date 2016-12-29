@@ -11,13 +11,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by kid0n on 27/12/2016.
+ * Created by kid0n on 29/12/2016.
  */
 
-public class HoodAdapter extends ArrayAdapter<Hood> {
+public class TeacherAdapter extends ArrayAdapter<Teacher> {
 
-    public HoodAdapter(Context context, ArrayList<Hood> hoods) {
-        super(context, 0, hoods);
+    public TeacherAdapter(Context context, ArrayList<Teacher> teachers) {
+        super(context, 0, teachers);
     }
 
     @NonNull
@@ -27,13 +27,13 @@ public class HoodAdapter extends ArrayAdapter<Hood> {
         View listItemView = convertView;
         if (listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.hood_list_item, parent, false);
+                    R.layout.human_list_item, parent, false);
         }
 
-        Hood currentHood = getItem(position);
+        Teacher currentTeacher = getItem(position);
 
-        TextView hoodName = (TextView) listItemView.findViewById(R.id.hood_name_text_view);
-        hoodName.setText(currentHood.getName());
+        TextView hoodName = (TextView) listItemView.findViewById(R.id.human_name_text_view);
+        hoodName.setText(currentTeacher.getName());
 
         return listItemView;
     }

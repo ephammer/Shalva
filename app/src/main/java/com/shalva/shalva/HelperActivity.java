@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -16,14 +17,20 @@ public class HelperActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.hood_list);
 
-        final ArrayList<Hood> hoods = new ArrayList<>();
-        hoods.add(new Hood("Bayt Vegan"));
-        hoods.add(new Hood("Givat Mordekhai"));
-        hoods.add(new Hood("Talpioth"));
-        hoods.add(new Hood("Shaarei Hessed"));
-        hoods.add(new Hood("Givat Ram"));
+        final ArrayList<Child> children = new ArrayList<>();
+        children.add(new Child("Gabriel Levy", new Hood("Bayt Vegan")));
+        children.add(new Child("Jessica Marciano", new Hood("Bayt Vegan")));
+        children.add(new Child("Gabriel Abensour", new Hood("Talpioth")));
 
-        HoodAdapter adapter = new HoodAdapter(this, hoods);
+        final ArrayList<Teacher> teachers = new ArrayList<>();
+        teachers.add(new Teacher("Dan Levy", children));
+        teachers.add(new Teacher("Patrick Cohen", children));
+        teachers.add(new Teacher("Kimberly Johanna", children));
+
+
+        TextView question = (TextView) findViewById(R.id.question_textView);
+        question.setText("Which Helper is there ?");
+        TeacherAdapter adapter = new TeacherAdapter(this, teachers);
 
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
@@ -32,7 +39,7 @@ public class HelperActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                Hood hood = hoods.get(position);
+                Teacher teacher = teachers.get(position);
 
                 // Start GeoFencing for this activity
                 Intent intent = new Intent(HelperActivity.this, GeoFencingActivity.class);

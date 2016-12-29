@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent driverIntent = new Intent(MainActivity.this, DriverActivity.class);
                 startActivity(driverIntent);
-                finish();
+
             }
         });
 
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent driverIntent = new Intent(MainActivity.this, HelperActivity.class);
                 startActivity(driverIntent);
-                finish();
+
             }
         });
     }
