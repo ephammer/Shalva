@@ -33,4 +33,8 @@ public class Child {
     public void absent() {
         this.present = false;
     }
+
+    public void present() {
+        this.present = true;
+    }
 }

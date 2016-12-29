@@ -35,4 +35,8 @@ public class Teacher {
     public void absent() {
         this.present = false;
     }
+
+    public void present() {
+        this.present = true;
+    }
 }

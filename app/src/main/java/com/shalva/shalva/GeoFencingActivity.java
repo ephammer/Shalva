@@ -11,7 +11,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,7 +27,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
-public class GeoFencingActivity extends AppCompatActivity implements
+public class GeoFencingActivity extends AppCompatActivity
+        implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
@@ -35,6 +39,7 @@ public class GeoFencingActivity extends AppCompatActivity implements
     private static final long GEO_DURATION = 60 * 60 * 1000;
     private static final String GEOFENCE_REQ_ID = "My Geofence";
     private static final float GEOFENCE_RADIUS = 500.0f; // in meters
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
     private final int REQ_PERMISSION = 999;
     // Defined in mili seconds.
     // This number in extremely low, and should be used only for debug
@@ -47,6 +52,8 @@ public class GeoFencingActivity extends AppCompatActivity implements
     private android.location.Location lastLocation;
     private LocationRequest locationRequest;
     private PendingIntent geoFencePendingIntent;
+    private String phoneNo;
+    private String message;
 
     // Create a Intent send by the notification
     public static Intent makeNotificationIntent(Context context, String msg) {
@@ -62,6 +69,15 @@ public class GeoFencingActivity extends AppCompatActivity implements
 
         // create GoogleApiClient
         createGoogleApi();
+
+        ImageView bus = (ImageView) findViewById(R.id.bus_gps_imageView);
+        bus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendSMSMessage();
+
+            }
+        });
     }
 
     // Create GoogleApiClient instance
@@ -288,4 +304,18 @@ public class GeoFencingActivity extends AppCompatActivity implements
 
         lastLocation = location;
     }
+
+    protected void sendSMSMessage() {
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(
+                "0584048820",
+                null,
+                "The Bus to Bayt Vegan has arrived bring down the following kids:\n " +
+                        "* Gabriel Levy\n " +
+                        "* Jessica Marciano",
+                null,
+                null);
+    }
+
+
 }

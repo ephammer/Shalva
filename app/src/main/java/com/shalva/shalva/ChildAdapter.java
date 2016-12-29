@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,14 +29,26 @@ public class ChildAdapter extends ArrayAdapter<Child> {
         View listItemView = convertView;
         if (listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.hood_list_item, parent, false);
+                    R.layout.human_list_item, parent, false);
         }
 
-        Child currentChild = getItem(position);
+        final Child currentChild = getItem(position);
 
-        TextView hoodName = (TextView) listItemView.findViewById(R.id.hood_name_text_view);
+        TextView hoodName = (TextView) listItemView.findViewById(R.id.human_name_text_view);
         hoodName.setText(currentChild.getName());
 
+        Switch presenceSwitch = (Switch) listItemView.findViewById(R.id.presence_switch);
+
+        presenceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    currentChild.present();
+                } else
+                    currentChild.absent();
+
+            }
+        });
         return listItemView;
     }
 }

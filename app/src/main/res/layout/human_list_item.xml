@@ -16,7 +16,7 @@
         android:textStyle="bold" />
 
     <Switch
-        android:id="@+id/switch1"
+        android:id="@+id/presence_switch"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
